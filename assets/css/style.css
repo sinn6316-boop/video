@@ -89,7 +89,15 @@ body {
     box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
 }
 
-.upload-btn {
+.upload-controls {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.upload-btn,
+.scan-btn {
     background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
@@ -104,7 +112,12 @@ body {
     font-weight: 600;
 }
 
-.upload-btn:hover {
+.scan-btn {
+    background: linear-gradient(45deg, #11998e 0%, #38ef7d 100%);
+}
+
+.upload-btn:hover,
+.scan-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }

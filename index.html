@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
+<head>  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>개인 갤러리</title>
@@ -36,10 +36,16 @@
             <div class="upload-section">
                 <div class="upload-box">
                     <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
-                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
-                        <i class="fas fa-plus"></i>
-                        파일 추가
-                    </button>
+                    <div class="upload-controls">
+                        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-plus"></i>
+                            파일 추가
+                        </button>
+                        <button class="scan-btn" id="scanFolders">
+                            <i class="fas fa-folder-open"></i>
+                            폴더 스캔
+                        </button>
+                    </div>
                 </div>
             </div>
 
