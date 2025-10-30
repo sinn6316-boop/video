@@ -18,14 +18,65 @@ class PersonalGallery {
             // 기존 폴더 파일들 제거 (업로드된 파일은 유지)
             this.mediaItems = this.mediaItems.filter(item => !item.isFromFolder);
             
-            // 이미지 폴더 스캔
-            await this.scanFolder('assets/images/', 'image');
-            
-            // 비디오 폴더 스캔
-            await this.scanFolder('assets/video/', 'video');
+            // 알려진 파일들을 직접 추가
+            const knownFiles = [
+                { path: 'assets/video/video1-1.mp4', name: 'video1-1.mp4', type: 'video' }
+            ];
+
+            // 일반적인 파일 패턴들도 시도
+            const commonPatterns = [
+                // 비디오 파일들
+                ...Array.from({length: 10}, (_, i) => ({
+                    path: `assets/video/video${i + 1}.mp4`, 
+                    name: `video${i + 1}.mp4`, 
+                    type: 'video'
+                })),
+                ...Array.from({length: 10}, (_, i) => ({
+                    path: `assets/video/sample${i + 1}.mp4`, 
+                    name: `sample${i + 1}.mp4`, 
+                    type: 'video'
+                })),
+                ...Array.from({length: 10}, (_, i) => ({
+                    path: `assets/video/test${i + 1}.mp4`, 
+                    name: `test${i + 1}.mp4`, 
+                    type: 'video'
+                })),
+                // 이미지 파일들
+                ...Array.from({length: 10}, (_, i) => ({
+                    path: `assets/images/image${i + 1}.jpg`, 
+                    name: `image${i + 1}.jpg`, 
+                    type: 'image'
+                })),
+                ...Array.from({length: 10}, (_, i) => ({
+                    path: `assets/images/photo${i + 1}.jpg`, 
+                    name: `photo${i + 1}.jpg`, 
+                    type: 'image'
+                })),
+                ...Array.from({length: 10}, (_, i) => ({
+                    path: `assets/images/sample${i + 1}.png`, 
+                    name: `sample${i + 1}.png`, 
+                    type: 'image'
+                }))
+            ];
+
+            // 알려진 파일들부터 처리
+            for (const file of knownFiles) {
+                await this.addKnownFile(file);
+            }
+
+            // 일반적인 패턴들 시도
+            for (const file of commonPatterns) {
+                await this.addKnownFile(file);
+            }
             
             this.saveMediaToStorage();
             this.updateGallery();
+            
+            if (this.mediaItems.filter(item => item.isFromFolder).length > 0) {
+                console.log('폴더에서 파일을 찾았습니다!');
+            } else {
+                console.log('폴더에서 파일을 찾지 못했습니다. assets/images/ 또는 assets/video/ 폴더에 파일을 추가해주세요.');
+            }
             
         } catch (error) {
             console.error('폴더 스캔 중 오류:', error);
@@ -34,87 +85,39 @@ class PersonalGallery {
         }
     }
 
-    async scanFolder(folderPath, type) {
-        // 알려진 이미지/비디오 파일 확장자
-        const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'];
-        const videoExtensions = ['mp4', 'webm', 'ogv', 'avi', 'mov', 'wmv', 'flv'];
-        
-        let filenames = [];
-        
-        // 폴더 타입에 따라 가능한 파일명들을 체크
-        if (type === 'video') {
-            // 비디오 폴더에서 알려진 파일들
-            filenames = ['video1-1.mp4']; // 확인된 파일
-            // 추가로 더 많은 파일이 있을 수 있으니 일반적인 패턴도 체크
-            for (let i = 1; i <= 20; i++) {
-                videoExtensions.forEach(ext => {
-                    filenames.push(`video${i}.${ext}`);
-                    filenames.push(`video${i}-${i}.${ext}`);
-                    filenames.push(`sample${i}.${ext}`);
-                    filenames.push(`test${i}.${ext}`);
-                });
-            }
-        } else if (type === 'image') {
-            // 이미지 폴더에서 일반적인 파일명들 체크
-            for (let i = 1; i <= 20; i++) {
-                imageExtensions.forEach(ext => {
-                    filenames.push(`image${i}.${ext}`);
-                    filenames.push(`photo${i}.${ext}`);
-                    filenames.push(`sample${i}.${ext}`);
-                    filenames.push(`test${i}.${ext}`);
-                });
-            }
-        }
-
-        // 각 파일명에 대해 존재 여부 확인
-        for (const filename of filenames) {
-            try {
-                const response = await fetch(folderPath + filename);
-                if (response.ok) {
-                    await this.addFileFromFolder(folderPath + filename, filename, type);
-                }
-            } catch (error) {
-                // 파일이 없으면 무시
-                continue;
-            }
-        }
-    }
-
-    async addFileFromFolder(filePath, filename, type) {
+    async addKnownFile(fileInfo) {
         try {
-            const response = await fetch(filePath);
-            if (!response.ok) return;
+            // 파일이 실제로 존재하는지 확인
+            const response = await fetch(fileInfo.path);
+            if (!response.ok) {
+                console.log(`파일을 찾을 수 없습니다: ${fileInfo.path}`);
+                return;
+            }
 
-            const blob = await response.blob();
-            const reader = new FileReader();
+            const mediaItem = {
+                id: 'folder_' + Date.now() + Math.random(),
+                name: fileInfo.name,
+                type: fileInfo.type,
+                data: fileInfo.path, // 실제 파일 경로 사용
+                size: 0, // 크기는 알 수 없음
+                uploadDate: new Date().toISOString(),
+                isFromFolder: true,
+                folderPath: fileInfo.path,
+                isDirectPath: true // 직접 경로임을 표시
+            };
+
+            // 중복 체크
+            const exists = this.mediaItems.some(item => 
+                item.folderPath === fileInfo.path || 
+                (item.name === fileInfo.name && item.isFromFolder)
+            );
             
-            return new Promise((resolve) => {
-                reader.onload = (e) => {
-                    const mediaItem = {
-                        id: 'folder_' + Date.now() + Math.random(),
-                        name: filename,
-                        type: type,
-                        data: e.target.result,
-                        size: blob.size,
-                        uploadDate: new Date().toISOString(),
-                        isFromFolder: true,
-                        folderPath: filePath
-                    };
-
-                    // 중복 체크
-                    const exists = this.mediaItems.some(item => 
-                        item.folderPath === filePath || item.name === filename
-                    );
-                    
-                    if (!exists) {
-                        this.mediaItems.push(mediaItem);
-                    }
-                    resolve();
-                };
-                reader.readAsDataURL(blob);
-            });
+            if (!exists) {
+                this.mediaItems.push(mediaItem);
+                console.log(`파일 추가됨: ${fileInfo.name}`);
+            }
         } catch (error) {
-            console.error(`파일 로드 실패: ${filePath}`, error);
+            console.error(`파일 로드 실패: ${fileInfo.path}`, error);
         }
     }
 
@@ -251,9 +254,11 @@ class PersonalGallery {
 
     createGalleryItemHTML(item, index) {
         const isVideo = item.type === 'video';
+        const mediaPath = item.isDirectPath ? item.data : item.data;
+        
         const mediaElement = isVideo 
-            ? `<video src="${item.data}" muted></video>`
-            : `<img src="${item.data}" alt="${item.name}">`;
+            ? `<video src="${mediaPath}" muted preload="metadata"></video>`
+            : `<img src="${mediaPath}" alt="${item.name}">`;
 
         const videoIndicator = isVideo 
             ? `<div class="video-indicator"><i class="fas fa-play"></i> 비디오</div>`
@@ -302,16 +307,17 @@ class PersonalGallery {
 
         const modal = document.getElementById('modal');
         const modalBody = document.getElementById('modalBody');
+        const mediaPath = item.isDirectPath ? item.data : item.data;
 
         if (item.type === 'video') {
             modalBody.innerHTML = `
-                <video src="${item.data}" controls autoplay style="max-width: 100%; max-height: 100%;">
+                <video src="${mediaPath}" controls autoplay style="max-width: 100%; max-height: 100%;">
                     브라우저가 비디오를 지원하지 않습니다.
                 </video>
             `;
         } else {
             modalBody.innerHTML = `
-                <img src="${item.data}" alt="${item.name}" style="max-width: 100%; max-height: 100%;">
+                <img src="${mediaPath}" alt="${item.name}" style="max-width: 100%; max-height: 100%;">
             `;
         }
 
