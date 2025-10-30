@@ -7,7 +7,115 @@ class PersonalGallery {
         
         this.initializeEventListeners();
         this.loadStoredMedia();
+        this.scanLocalFolders(); // 페이지 로드 시 자동으로 폴더 스캔
         this.updateGallery();
+    }
+
+    async scanLocalFolders() {
+        this.showLoading(true);
+        
+        try {
+            // 기존 폴더 파일들 제거 (업로드된 파일은 유지)
+            this.mediaItems = this.mediaItems.filter(item => !item.isFromFolder);
+            
+            // 이미지 폴더 스캔
+            await this.scanFolder('assets/images/', 'image');
+            
+            // 비디오 폴더 스캔
+            await this.scanFolder('assets/video/', 'video');
+            
+            this.saveMediaToStorage();
+            this.updateGallery();
+            
+        } catch (error) {
+            console.error('폴더 스캔 중 오류:', error);
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    async scanFolder(folderPath, type) {
+        // 알려진 이미지/비디오 파일 확장자
+        const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'];
+        const videoExtensions = ['mp4', 'webm', 'ogv', 'avi', 'mov', 'wmv', 'flv'];
+        
+        let filenames = [];
+        
+        // 폴더 타입에 따라 가능한 파일명들을 체크
+        if (type === 'video') {
+            // 비디오 폴더에서 알려진 파일들
+            filenames = ['video1-1.mp4']; // 확인된 파일
+            // 추가로 더 많은 파일이 있을 수 있으니 일반적인 패턴도 체크
+            for (let i = 1; i <= 20; i++) {
+                videoExtensions.forEach(ext => {
+                    filenames.push(`video${i}.${ext}`);
+                    filenames.push(`video${i}-${i}.${ext}`);
+                    filenames.push(`sample${i}.${ext}`);
+                    filenames.push(`test${i}.${ext}`);
+                });
+            }
+        } else if (type === 'image') {
+            // 이미지 폴더에서 일반적인 파일명들 체크
+            for (let i = 1; i <= 20; i++) {
+                imageExtensions.forEach(ext => {
+                    filenames.push(`image${i}.${ext}`);
+                    filenames.push(`photo${i}.${ext}`);
+                    filenames.push(`sample${i}.${ext}`);
+                    filenames.push(`test${i}.${ext}`);
+                });
+            }
+        }
+
+        // 각 파일명에 대해 존재 여부 확인
+        for (const filename of filenames) {
+            try {
+                const response = await fetch(folderPath + filename);
+                if (response.ok) {
+                    await this.addFileFromFolder(folderPath + filename, filename, type);
+                }
+            } catch (error) {
+                // 파일이 없으면 무시
+                continue;
+            }
+        }
+    }
+
+    async addFileFromFolder(filePath, filename, type) {
+        try {
+            const response = await fetch(filePath);
+            if (!response.ok) return;
+
+            const blob = await response.blob();
+            const reader = new FileReader();
+            
+            return new Promise((resolve) => {
+                reader.onload = (e) => {
+                    const mediaItem = {
+                        id: 'folder_' + Date.now() + Math.random(),
+                        name: filename,
+                        type: type,
+                        data: e.target.result,
+                        size: blob.size,
+                        uploadDate: new Date().toISOString(),
+                        isFromFolder: true,
+                        folderPath: filePath
+                    };
+
+                    // 중복 체크
+                    const exists = this.mediaItems.some(item => 
+                        item.folderPath === filePath || item.name === filename
+                    );
+                    
+                    if (!exists) {
+                        this.mediaItems.push(mediaItem);
+                    }
+                    resolve();
+                };
+                reader.readAsDataURL(blob);
+            });
+        } catch (error) {
+            console.error(`파일 로드 실패: ${filePath}`, error);
+        }
     }
 
     initializeEventListeners() {
@@ -151,12 +259,20 @@ class PersonalGallery {
             ? `<div class="video-indicator"><i class="fas fa-play"></i> 비디오</div>`
             : '';
 
+        const folderIndicator = item.isFromFolder 
+            ? `<div class="folder-indicator"><i class="fas fa-folder"></i></div>`
+            : '';
+
         return `
             <div class="gallery-item" data-index="${index}">
                 ${mediaElement}
                 ${videoIndicator}
+                ${folderIndicator}
                 <div class="overlay">
                     <i class="fas ${isVideo ? 'fa-play' : 'fa-search-plus'}"></i>
+                </div>
+                <div class="item-info">
+                    <span class="item-name">${item.name}</span>
                 </div>
             </div>
         `;

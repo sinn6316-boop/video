@@ -204,6 +204,42 @@ body {
     gap: 5px;
 }
 
+.folder-indicator {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(17, 153, 142, 0.8);
+    color: white;
+    padding: 5px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+}
+
+.item-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: white;
+    padding: 20px 10px 10px;
+    font-size: 0.8rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gallery-item:hover .item-info {
+    opacity: 1;
+}
+
+.item-name {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+}
+
 /* 모달 스타일 */
 .modal {
     display: none;
