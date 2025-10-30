@@ -1,0 +1,405 @@
+/* 기본 스타일 리셋 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 헤더 스타일 */
+.header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 20px;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #2a5298;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav {
+    display: flex;
+    gap: 10px;
+}
+
+.nav-btn {
+    background: transparent;
+    border: 2px solid #2a5298;
+    color: #2a5298;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.nav-btn:hover,
+.nav-btn.active {
+    background: #2a5298;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(42, 82, 152, 0.3);
+}
+
+/* 메인 컨텐츠 */
+.main {
+    padding: 2rem 0;
+}
+
+/* 업로드 섹션 */
+.upload-section {
+    margin-bottom: 2rem;
+}
+
+.upload-box {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+}
+
+.upload-btn {
+    background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+}
+
+.upload-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* 갤러리 컨테이너 */
+.gallery-container {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+    min-height: 400px;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.gallery-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 15px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    background: #f8f9fa;
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.gallery-item img,
+.gallery-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img,
+.gallery-item:hover video {
+    transform: scale(1.05);
+}
+
+.gallery-item .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.gallery-item:hover .overlay {
+    opacity: 1;
+}
+
+.gallery-item .overlay i {
+    color: white;
+    font-size: 2rem;
+}
+
+.video-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* 모달 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    position: relative;
+    width: 90%;
+    height: 90%;
+    margin: 5% auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    z-index: 1001;
+    transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+    color: #ff6b6b;
+}
+
+.modal-body {
+    max-width: 100%;
+    max-height: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-body img,
+.modal-body video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.modal-controls {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.modal-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.modal-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.delete-btn:hover {
+    background: rgba(255, 107, 107, 0.3);
+    border-color: #ff6b6b;
+}
+
+/* 로딩 스피너 */
+.loading {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top: 5px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 빈 갤러리 메시지 */
+.empty-gallery {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #666;
+}
+
+.empty-gallery i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: #ddd;
+}
+
+.empty-gallery h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.empty-gallery p {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+/* 필터 숨김 클래스 */
+.gallery-item.hidden {
+    display: none;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .header .container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .nav-btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    
+    .upload-box {
+        padding: 1.5rem;
+    }
+    
+    .upload-btn {
+        padding: 12px 24px;
+        font-size: 1rem;
+    }
+    
+    .modal-content {
+        width: 95%;
+        height: 95%;
+        margin: 2.5% auto;
+    }
+    
+    .modal-controls {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+    }
+    
+    .gallery-container {
+        padding: 1rem;
+    }
+    
+    .upload-box {
+        padding: 1rem;
+    }
+    
+    .logo {
+        font-size: 1.5rem;
+    }
+    
+    .nav-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}

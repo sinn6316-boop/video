@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>개인 갤러리</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <i class="fas fa-camera"></i>
+                My Gallery
+            </h1>
+            <nav class="nav">
+                <button class="nav-btn active" data-filter="all">
+                    <i class="fas fa-th"></i>
+                    전체
+                </button>
+                <button class="nav-btn" data-filter="images">
+                    <i class="fas fa-image"></i>
+                    이미지
+                </button>
+                <button class="nav-btn" data-filter="videos">
+                    <i class="fas fa-video"></i>
+                    비디오
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="upload-section">
+                <div class="upload-box">
+                    <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
+                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-plus"></i>
+                        파일 추가
+                    </button>
+                </div>
+            </div>
+
+            <div class="gallery-container">
+                <div class="gallery" id="gallery">
+                    <!-- 갤러리 아이템들이 여기에 동적으로 추가됩니다 -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 모달 -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="modalClose">&times;</span>
+            <div class="modal-body" id="modalBody">
+                <!-- 이미지나 비디오가 여기에 표시됩니다 -->
+            </div>
+            <div class="modal-controls">
+                <button class="modal-btn" id="prevBtn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="modal-btn" id="nextBtn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <button class="modal-btn delete-btn" id="deleteBtn">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 로딩 스피너 -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>로딩 중...</p>
+    </div>
+
+    <script src="assets/js/script.js"></script>
+</body>
+</html>
