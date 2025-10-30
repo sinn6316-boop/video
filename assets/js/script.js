@@ -15,6 +15,10 @@ class PersonalGallery {
         const fileInput = document.getElementById('fileInput');
         fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
 
+        // 폴더 스캔
+        const scanBtn = document.getElementById('scanFolders');
+        scanBtn.addEventListener('click', () => this.scanLocalFolders());
+
         // 필터 버튼들
         const navButtons = document.querySelectorAll('.nav-btn');
         navButtons.forEach(btn => {
